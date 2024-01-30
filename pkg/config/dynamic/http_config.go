@@ -224,7 +224,7 @@ func (r *ResponseForwarding) SetDefaults() {
 
 // Server holds the server configuration.
 type Server struct {
-	URL    string `json:"url,omitempty" toml:"url,omitempty" yaml:"url,omitempty" label:"-"`
+	URL    string `json:"url,omitempty" toml:"url,omitempty" yaml:"url,omitempty" label:"url,omitempty"`
 	Scheme string `json:"-" toml:"-" yaml:"-" file:"-"`
 	Port   string `json:"-" toml:"-" yaml:"-" file:"-"`
 }

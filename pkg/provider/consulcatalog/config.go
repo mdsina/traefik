@@ -301,7 +301,9 @@ func (p *Provider) addServer(item itemData, loadBalancer *dynamic.ServersLoadBal
 		scheme = "https"
 	}
 
-	loadBalancer.Servers[0].URL = fmt.Sprintf("%s://%s", scheme, net.JoinHostPort(item.Address, port))
+	if loadBalancer.Servers[0].URL == "" {
+		loadBalancer.Servers[0].URL = fmt.Sprintf("%s://%s", scheme, net.JoinHostPort(item.Address, port))
+	}
 
 	return nil
 }
