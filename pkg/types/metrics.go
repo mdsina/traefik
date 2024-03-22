@@ -26,6 +26,7 @@ type Prometheus struct {
 	EntryPoint           string            `description:"EntryPoint" json:"entryPoint,omitempty" toml:"entryPoint,omitempty" yaml:"entryPoint,omitempty" export:"true"`
 	ManualRouting        bool              `description:"Manual routing" json:"manualRouting,omitempty" toml:"manualRouting,omitempty" yaml:"manualRouting,omitempty" export:"true"`
 	HeaderLabels         map[string]string `description:"Defines the extra labels for the requests_total metrics, and for each of them, the request header containing the value for this label." json:"headerLabels,omitempty" toml:"headerLabels,omitempty" yaml:"headerLabels,omitempty" export:"true"`
+	ConstLabels          map[string]string `description:"Custom labels that will be added to metrics" json:"constLabels,omitempty" toml:"constLabels,omitempty" yaml:"constLabels,omitempty" export:"true"`
 }
 
 // SetDefaults sets the default values.

@@ -21,15 +21,19 @@ const (
 
 // TraefikLog holds the configuration settings for the traefik logger.
 type TraefikLog struct {
-	Level    string `description:"Log level set to traefik logs." json:"level,omitempty" toml:"level,omitempty" yaml:"level,omitempty" export:"true"`
-	FilePath string `description:"Traefik log file path. Stdout is used when omitted or empty." json:"filePath,omitempty" toml:"filePath,omitempty" yaml:"filePath,omitempty"`
-	Format   string `description:"Traefik log format: json | common" json:"format,omitempty" toml:"format,omitempty" yaml:"format,omitempty" export:"true"`
+	Level       string            `description:"Log level set to traefik logs." json:"level,omitempty" toml:"level,omitempty" yaml:"level,omitempty" export:"true"`
+	FilePath    string            `description:"Traefik log file path. Stdout is used when omitted or empty." json:"filePath,omitempty" toml:"filePath,omitempty" yaml:"filePath,omitempty"`
+	Format      string            `description:"Traefik log format: json | common" json:"format,omitempty" toml:"format,omitempty" yaml:"format,omitempty" export:"true"`
+	ConstFields map[string]string `description:"Constant fields" json:"constFields,omitempty" toml:"constFields,omitempty" yaml:"constFields,omitempty" export:"true"`
+	FieldsMap   map[string]string `description:"Map fields to custom names" json:"fieldsMap,omitempty" toml:"fieldsMap,omitempty" yaml:"fieldsMap,omitempty" export:"true"`
 }
 
 // SetDefaults sets the default values.
 func (l *TraefikLog) SetDefaults() {
 	l.Format = CommonFormat
 	l.Level = "ERROR"
+	l.ConstFields = map[string]string{}
+	l.FieldsMap = map[string]string{}
 }
 
 // AccessLog holds the configuration settings for the access logger (middlewares/accesslog).
@@ -39,6 +43,8 @@ type AccessLog struct {
 	Filters       *AccessLogFilters `description:"Access log filters, used to keep only specific access logs." json:"filters,omitempty" toml:"filters,omitempty" yaml:"filters,omitempty" export:"true"`
 	Fields        *AccessLogFields  `description:"AccessLogFields." json:"fields,omitempty" toml:"fields,omitempty" yaml:"fields,omitempty" export:"true"`
 	BufferingSize int64             `description:"Number of access log lines to process in a buffered way." json:"bufferingSize,omitempty" toml:"bufferingSize,omitempty" yaml:"bufferingSize,omitempty" export:"true"`
+	ConstFields   map[string]string `description:"Access log constant fields" json:"constFields,omitempty" toml:"constFields,omitempty" yaml:"constFields,omitempty" export:"true"`
+	FieldsMap     map[string]string `description:"Map fields to custom names" json:"fieldsMap,omitempty" toml:"fieldsMap,omitempty" yaml:"fieldsMap,omitempty" export:"true"`
 }
 
 // SetDefaults sets the default values.
@@ -48,6 +54,8 @@ func (l *AccessLog) SetDefaults() {
 	l.Filters = &AccessLogFilters{}
 	l.Fields = &AccessLogFields{}
 	l.Fields.SetDefaults()
+	l.ConstFields = map[string]string{}
+	l.FieldsMap = map[string]string{}
 }
 
 // AccessLogFilters holds filters configuration.

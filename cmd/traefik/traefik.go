@@ -572,7 +572,10 @@ func configureLogging(staticConfiguration *static.Configuration) {
 	// configure log format
 	var formatter logrus.Formatter
 	if staticConfiguration.Log != nil && staticConfiguration.Log.Format == "json" {
-		formatter = &logrus.JSONFormatter{}
+		formatter = log.CreateJsonFormatter(
+			&staticConfiguration.Log.ConstFields,
+			&staticConfiguration.Log.FieldsMap,
+		)
 	} else {
 		disableColors := len(logFile) > 0
 		formatter = &logrus.TextFormatter{DisableColors: disableColors, FullTimestamp: true, DisableSorting: true}

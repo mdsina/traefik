@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -75,16 +77,34 @@ const (
 // doesn't exist anymore.
 var promState = newPrometheusState()
 
-var promRegistry = stdprometheus.NewRegistry()
+var promRegistryGatherer = stdprometheus.NewRegistry()
+var promRegistry stdprometheus.Registerer = nil
+
+func initRegistry(config *types.Prometheus) {
+	labels := make(stdprometheus.Labels, len(config.ConstLabels))
+	for k, v := range config.ConstLabels {
+		v = strings.TrimSpace(v)
+		if strings.HasPrefix(v, "$") {
+			env, _ := strings.CutPrefix(v, "$")
+			env = os.Getenv(env)
+			if env != "" {
+				v = env
+			}
+		}
+		labels[k] = v
+	}
+	promRegistry = stdprometheus.WrapRegistererWith(labels, promRegistryGatherer)
+}
 
 // PrometheusHandler exposes Prometheus routes.
 func PrometheusHandler() http.Handler {
-	return promhttp.HandlerFor(promRegistry, promhttp.HandlerOpts{})
+	return promhttp.HandlerFor(promRegistryGatherer, promhttp.HandlerOpts{})
 }
 
 // RegisterPrometheus registers all Prometheus metrics.
 // It must be called only once and failing to register the metrics will lead to a panic.
 func RegisterPrometheus(ctx context.Context, config *types.Prometheus) Registry {
+	initRegistry(config)
 	standardRegistry := initStandardRegistry(config)
 
 	if err := promRegistry.Register(collectors.NewProcessCollector(collectors.ProcessCollectorOpts{})); err != nil {
