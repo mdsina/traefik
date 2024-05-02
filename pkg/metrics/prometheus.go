@@ -222,28 +222,28 @@ func initStandardRegistry(config *types.Prometheus) Registry {
 		routerReqs := newCounterWithHeadersFrom(stdprometheus.CounterOpts{
 			Name: routerReqsTotalName,
 			Help: "How many HTTP requests are processed on a router, partitioned by service, status code, protocol, and method.",
-		}, config.HeaderLabels, []string{"code", "method", "protocol", "router", "service"})
+		}, config.HeaderLabels, []string{"code", "method", "protocol", "router", "tservice"})
 		routerReqsTLS := newCounterFrom(stdprometheus.CounterOpts{
 			Name: routerReqsTLSTotalName,
 			Help: "How many HTTP requests with TLS are processed on a router, partitioned by service, TLS Version, and TLS cipher Used.",
-		}, []string{"tls_version", "tls_cipher", "router", "service"})
+		}, []string{"tls_version", "tls_cipher", "router", "tservice"})
 		routerReqDurations := newHistogramFrom(stdprometheus.HistogramOpts{
 			Name:    routerReqDurationName,
 			Help:    "How long it took to process the request on a router, partitioned by service, status code, protocol, and method.",
 			Buckets: buckets,
-		}, []string{"code", "method", "protocol", "router", "service"})
+		}, []string{"code", "method", "protocol", "router", "tservice"})
 		routerOpenConns := newGaugeFrom(stdprometheus.GaugeOpts{
 			Name: routerOpenConnsName,
 			Help: "How many open connections exist on a router, partitioned by service, method, and protocol.",
-		}, []string{"method", "protocol", "router", "service"})
+		}, []string{"method", "protocol", "router", "tservice"})
 		routerReqsBytesTotal := newCounterFrom(stdprometheus.CounterOpts{
 			Name: routerReqsBytesTotalName,
 			Help: "The total size of requests in bytes handled by a router, partitioned by service, status code, protocol, and method.",
-		}, []string{"code", "method", "protocol", "router", "service"})
+		}, []string{"code", "method", "protocol", "router", "tservice"})
 		routerRespsBytesTotal := newCounterFrom(stdprometheus.CounterOpts{
 			Name: routerRespsBytesTotalName,
 			Help: "The total size of responses in bytes handled by a router, partitioned by service, status code, protocol, and method.",
-		}, []string{"code", "method", "protocol", "router", "service"})
+		}, []string{"code", "method", "protocol", "router", "tservice"})
 
 		promState.vectors = append(promState.vectors,
 			routerReqs.cv,
@@ -265,36 +265,36 @@ func initStandardRegistry(config *types.Prometheus) Registry {
 		serviceReqs := newCounterWithHeadersFrom(stdprometheus.CounterOpts{
 			Name: serviceReqsTotalName,
 			Help: "How many HTTP requests processed on a service, partitioned by status code, protocol, and method.",
-		}, config.HeaderLabels, []string{"code", "method", "protocol", "service"})
+		}, config.HeaderLabels, []string{"code", "method", "protocol", "tservice"})
 		serviceReqsTLS := newCounterFrom(stdprometheus.CounterOpts{
 			Name: serviceReqsTLSTotalName,
 			Help: "How many HTTP requests with TLS processed on a service, partitioned by TLS version and TLS cipher.",
-		}, []string{"tls_version", "tls_cipher", "service"})
+		}, []string{"tls_version", "tls_cipher", "tservice"})
 		serviceReqDurations := newHistogramFrom(stdprometheus.HistogramOpts{
 			Name:    serviceReqDurationName,
 			Help:    "How long it took to process the request on a service, partitioned by status code, protocol, and method.",
 			Buckets: buckets,
-		}, []string{"code", "method", "protocol", "service"})
+		}, []string{"code", "method", "protocol", "tservice"})
 		serviceOpenConns := newGaugeFrom(stdprometheus.GaugeOpts{
 			Name: serviceOpenConnsName,
 			Help: "How many open connections exist on a service, partitioned by method and protocol.",
-		}, []string{"method", "protocol", "service"})
+		}, []string{"method", "protocol", "tservice"})
 		serviceRetries := newCounterFrom(stdprometheus.CounterOpts{
 			Name: serviceRetriesTotalName,
 			Help: "How many request retries happened on a service.",
-		}, []string{"service"})
+		}, []string{"tservice"})
 		serviceServerUp := newGaugeFrom(stdprometheus.GaugeOpts{
 			Name: serviceServerUpName,
 			Help: "service server is up, described by gauge value of 0 or 1.",
-		}, []string{"service", "url"})
+		}, []string{"tservice", "url"})
 		serviceReqsBytesTotal := newCounterFrom(stdprometheus.CounterOpts{
 			Name: serviceReqsBytesTotalName,
 			Help: "The total size of requests in bytes received by a service, partitioned by status code, protocol, and method.",
-		}, []string{"code", "method", "protocol", "service"})
+		}, []string{"code", "method", "protocol", "tservice"})
 		serviceRespsBytesTotal := newCounterFrom(stdprometheus.CounterOpts{
 			Name: serviceRespsBytesTotalName,
 			Help: "The total size of responses in bytes returned by a service, partitioned by status code, protocol, and method.",
-		}, []string{"code", "method", "protocol", "service"})
+		}, []string{"code", "method", "protocol", "tservice"})
 
 		promState.vectors = append(promState.vectors,
 			serviceReqs.cv,
@@ -458,14 +458,14 @@ func (ps *prometheusState) Collect(ch chan<- stdprometheus.Metric) {
 
 	for _, service := range ps.deletedServices {
 		if !ps.dynamicConfig.hasService(service) {
-			ps.DeletePartialMatch(map[string]string{"service": service})
+			ps.DeletePartialMatch(map[string]string{"tservice": service})
 		}
 	}
 
 	for service, urls := range ps.deletedURLs {
 		for _, url := range urls {
 			if !ps.dynamicConfig.hasServerURL(service, url) {
-				ps.DeletePartialMatch(map[string]string{"service": service, "url": url})
+				ps.DeletePartialMatch(map[string]string{"tservice": service, "url": url})
 			}
 		}
 	}

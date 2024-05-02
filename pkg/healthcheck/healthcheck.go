@@ -185,7 +185,7 @@ func (hc *HealthCheck) checkServersLB(ctx context.Context, backend *BackendConfi
 			newDisabledURLs = append(newDisabledURLs, disabledURL)
 		}
 
-		labelValues := []string{"service", backend.name, "url", disabledURL.url.String()}
+		labelValues := []string{"tservice", backend.name, "url", disabledURL.url.String()}
 		hc.metrics.serverUpGauge.With(labelValues...).Set(serverUpMetricValue)
 	}
 
@@ -215,7 +215,7 @@ func (hc *HealthCheck) checkServersLB(ctx context.Context, backend *BackendConfi
 			serverUpMetricValue = 0
 		}
 
-		labelValues := []string{"service", backend.name, "url", enabledURL.String()}
+		labelValues := []string{"tservice", backend.name, "url", enabledURL.String()}
 		hc.metrics.serverUpGauge.With(labelValues...).Set(serverUpMetricValue)
 	}
 }

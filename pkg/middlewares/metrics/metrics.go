@@ -67,7 +67,7 @@ func NewRouterMiddleware(ctx context.Context, next http.Handler, registry metric
 		openConnsGauge:       registry.RouterOpenConnsGauge(),
 		reqsBytesCounter:     registry.RouterReqsBytesCounter(),
 		respsBytesCounter:    registry.RouterRespsBytesCounter(),
-		baseLabels:           []string{"router", routerName, "service", serviceName},
+		baseLabels:           []string{"router", routerName, "tservice", serviceName},
 	}
 }
 
@@ -83,7 +83,7 @@ func NewServiceMiddleware(ctx context.Context, next http.Handler, registry metri
 		openConnsGauge:       registry.ServiceOpenConnsGauge(),
 		reqsBytesCounter:     registry.ServiceReqsBytesCounter(),
 		respsBytesCounter:    registry.ServiceRespsBytesCounter(),
-		baseLabels:           []string{"service", serviceName},
+		baseLabels:           []string{"tservice", serviceName},
 	}
 }
 
@@ -226,5 +226,5 @@ type RetryListener struct {
 
 // Retried tracks the retry in the RequestMetrics implementation.
 func (m *RetryListener) Retried(_ *http.Request, _ int) {
-	m.retryMetrics.ServiceRetriesCounter().With("service", m.serviceName).Add(1)
+	m.retryMetrics.ServiceRetriesCounter().With("tservice", m.serviceName).Add(1)
 }
