@@ -3,7 +3,9 @@ package consulcatalog
 import (
 	"context"
 	"fmt"
+	"os"
 	"strconv"
+	"strings"
 	"text/template"
 	"time"
 
@@ -586,12 +588,21 @@ func (p *Provider) watchConnectTLS(ctx context.Context) error {
 }
 
 func createClient(namespace string, endpoint *EndpointConfig) (*api.Client, error) {
+	token := strings.TrimSpace(endpoint.Token)
+	if strings.HasPrefix(token, "$") {
+		env, _ := strings.CutPrefix(token, "$")
+		env = os.Getenv(env)
+		if env != "" {
+			token = env
+		}
+	}
+
 	config := api.Config{
 		Address:    endpoint.Address,
 		Scheme:     endpoint.Scheme,
 		Datacenter: endpoint.DataCenter,
 		WaitTime:   time.Duration(endpoint.EndpointWaitTime),
-		Token:      endpoint.Token,
+		Token:      token,
 		Namespace:  namespace,
 	}
 
